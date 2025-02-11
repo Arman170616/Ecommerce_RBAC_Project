@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'django_filters',
 
     'users', 
+    'products',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +134,42 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK.update({
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',  # For anonymous users
+        'rest_framework.throttling.UserRateThrottle',  # For authenticated users
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/minute',  # 10 requests per minute for anonymous users
+        'user': '100/minute',  # 100 requests per minute for authenticated users
+    },
+})
+
+
+REST_FRAMEWORK['DEFAULT_THROTTLE_RATES'].update({
+    'vendor': '50/minute',  # Vendors can make 50 requests per minute
+})
+
+
+REST_FRAMEWORK.update({
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,  # Set default page size to 10
+})
+
+
+REST_FRAMEWORK.update({
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+})
+
+
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',  # Redis runs on port 6379
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
